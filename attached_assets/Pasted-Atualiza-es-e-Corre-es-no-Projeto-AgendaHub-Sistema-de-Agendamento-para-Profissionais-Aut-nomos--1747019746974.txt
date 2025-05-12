@@ -1,0 +1,61 @@
+Atualizações e Correções no Projeto AgendaHub - Sistema de Agendamento para Profissionais Autônomos
+
+Objetivo:
+Implementar e corrigir funcionalidades pendentes no sistema AgendaHub, garantindo que todas as abas e funcionalidades descritas estejam operacionais e alinhadas à proposta do projeto.
+
+1. Painel do Admin (Sistema):
+Estabelecimentos: Implementar a listagem de estabelecimentos cadastrados. Exibir informações essenciais (nome, endereço, proprietário) e permitir ações como editar, remover e visualizar detalhes do estabelecimento.
+
+Usuários: Implementar a aba de usuários, exibindo todos os usuários cadastrados (clientes e autônomos). Permitir ações administrativas, como editar, remover e visualizar detalhes do usuário.
+
+Relatórios: Implementar relatórios detalhados, incluindo número de agendamentos por estabelecimento, número de cancelamentos, número de clientes cadastrados e faturamento total.
+
+Notificações: Implementar a aba de notificações, exibindo todas as notificações enviadas pelo sistema, bem como a possibilidade de criar novas notificações globais.
+
+Pendências: Corrigir a funcionalidade da aba de pendências, listando ações pendentes (ex.: aprovações de cadastro, solicitações de alteração de dados). Permitir a resolução ou rejeição dessas pendências.
+
+2. Painel do Estabelecimento:
+Agenda: Implementar a funcionalidade da agenda, exibindo os agendamentos marcados, cancelados e concluídos.
+
+Clientes: Implementar a aba de clientes, listando todos os clientes atendidos e os que estão cadastrados naquele estabelecimento.
+
+Financeiro: Implementar a aba financeira, exibindo o histórico de faturamento do estabelecimento, com filtros por data, serviço ou funcionário.
+
+Relatórios: Implementar relatórios específicos para o estabelecimento, como serviços mais agendados, horários de pico e funcionários mais requisitados.
+
+Notificações: Implementar a aba de notificações, exibindo notificações enviadas aos clientes do estabelecimento.
+
+Meu Negócio: Implementar a aba "Meu Negócio", permitindo que o dono do estabelecimento configure:
+
+Serviços oferecidos (nome, preço, duração etc).
+
+Definição de quais funcionários oferecem cada serviço.
+
+Informações gerais do estabelecimento (endereço, horário de funcionamento, contato).
+
+Funcionários:
+
+Implementar a aba de funcionários, permitindo o cadastro, edição e remoção de funcionários.
+
+Definir quais serviços cada funcionário está habilitado a executar.
+
+Visualização da agenda específica de cada funcionário.
+
+3. Painel do Cliente:
+Novo Agendamento: Implementar a funcionalidade para o cliente selecionar um serviço, data, hora e funcionário (se aplicável) para realizar um novo agendamento.
+
+Histórico: Exibir o histórico de serviços realizados pelo cliente, incluindo data, serviço, profissional e status do agendamento (concluído, cancelado).
+
+Notificações: Exibir notificações enviadas pelo estabelecimento ou pelo sistema (ex.: lembrete de agendamento, promoções, etc.).
+
+Estabelecimentos: Exibir a lista de estabelecimentos em que o cliente está cadastrado. Permitir o acesso rápido ao perfil de cada estabelecimento.
+
+Perfil: Implementar a aba de perfil, permitindo ao cliente atualizar informações pessoais, ver histórico de agendamentos e gerenciar notificações recebidas.
+
+Considerações Finais:
+
+As funcionalidades listadas são essenciais para garantir a completude do sistema e a integridade dos fluxos de trabalho dos diferentes perfis de usuário (Admin, Estabelecimento, Cliente).
+
+A estrutura modular permite a implementação gradual das funcionalidades, priorizando as mais críticas e urgentes.
+
+A interface deve manter a padronização visual (temas claro/escuro) e a consistência na navegação entre as abas e funcionalidades.

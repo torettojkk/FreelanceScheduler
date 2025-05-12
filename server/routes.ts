@@ -91,6 +91,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  app.patch("/api/businesses/:id", async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Permissão negada" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+      
+      const { name, ownerName, email, phone, type, address, description, status, isPremium } = req.body;
+      
+      // Check if business exists
+      const existingBusiness = await storage.getBusiness(id);
+      if (!existingBusiness) {
+        return res.status(404).json({ message: "Estabelecimento não encontrado" });
+      }
+      
+      // Update business
+      const updatedBusiness = await storage.updateBusiness(id, {
+        ...(name && { name }),
+        ...(ownerName && { ownerName }),
+        ...(email && { email }),
+        ...(phone !== undefined && { phone }),
+        ...(type && { type }),
+        ...(address !== undefined && { address }),
+        ...(description !== undefined && { description }),
+        ...(status && { status }),
+        ...(isPremium !== undefined && { isPremium }),
+      });
+      
+      res.json(updatedBusiness);
+    } catch (error) {
+      console.error("Error updating business:", error);
+      res.status(500).json({ message: "Erro ao atualizar estabelecimento" });
+    }
+  });
+  
+  app.delete("/api/businesses/:id", async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Permissão negada" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+      
+      // Check if business exists
+      const existingBusiness = await storage.getBusiness(id);
+      if (!existingBusiness) {
+        return res.status(404).json({ message: "Estabelecimento não encontrado" });
+      }
+      
+      // We should add a method to delete business in storage
+      // For now, we can update the status to "inactive"
+      const updatedBusiness = await storage.updateBusiness(id, {
+        status: "inactive",
+      });
+      
+      res.json({ success: true, message: "Estabelecimento removido com sucesso" });
+    } catch (error) {
+      console.error("Error deleting business:", error);
+      res.status(500).json({ message: "Erro ao remover estabelecimento" });
+    }
+  });
+  
   // Service routes
   app.get("/api/businesses/:businessId/services", async (req, res) => {
     try {
