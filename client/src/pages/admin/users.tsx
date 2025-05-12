@@ -41,7 +41,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, getQueryFn, apiRequest } from "@/lib/queryClient";
 import { User, UserRole } from "@shared/schema";
 import { 
-  User as UserIcon, Shield, Mail, Calendar, Edit, Trash2, Eye, Search, RefreshCcw, PlusCircle
+  User as UserIcon, Shield, Mail, Calendar, Edit, Trash2, Eye, Search, RefreshCcw, PlusCircle,
+  Building
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -430,7 +431,7 @@ export default function AdminUsers() {
                 <div>
                   <Label className="text-xs text-muted-foreground">Estabelecimento Vinculado</Label>
                   <div className="flex items-center gap-2 mt-1">
-                    <Store className="h-4 w-4 text-primary" />
+                    <Building className="h-4 w-4 text-primary" />
                     <span>ID do Estabelecimento: {viewUser.businessId}</span>
                   </div>
                 </div>
