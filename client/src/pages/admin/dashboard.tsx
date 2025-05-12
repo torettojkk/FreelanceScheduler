@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "wouter";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import {
   Card,
@@ -18,39 +19,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowUp, Building, Users, CalendarCheck } from "lucide-react";
+import { ArrowUp, Building, Users, CalendarCheck, Eye, Edit, PlusCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getQueryFn } from "@/lib/queryClient";
+import { Business } from "@shared/schema";
 
 export default function AdminDashboard() {
   const { toast } = useToast();
-  const [businessName, setBusinessName] = useState("");
-  const [ownerName, setOwnerName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [businessType, setBusinessType] = useState("");
+  const [, navigate] = useLocation();
   const [generatedUrl, setGeneratedUrl] = useState("");
-
-  const handleRegisterBusiness = () => {
-    if (!businessName || !ownerName || !email || !businessType) {
-      toast({
-        title: "Erro ao cadastrar",
-        description: "Por favor, preencha todos os campos obrigatórios.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Simulate API call
-    setTimeout(() => {
-      const url = `https://agendahub.com/${businessName.toLowerCase().replace(/\s+/g, '-')}`;
-      setGeneratedUrl(url);
-      toast({
-        title: "Estabelecimento cadastrado com sucesso!",
-        description: "URL de cadastro gerada com sucesso.",
-      });
-    }, 1000);
+  
+  // Fetch establishments from API
+  const { data: establishments, isLoading, isError } = useQuery<Business[]>({
+    queryKey: ["/api/businesses"],
+    queryFn: getQueryFn({ on401: "throw" }),
+  });
+  
+  // Number of establishments for stats card
+  const establishmentsCount = establishments?.length || 0;
+  
+  // Function to redirect to the establishments page
+  const goToNewEstablishmentPage = () => {
+    navigate("/admin/establishments");
+    toast({
+      title: "Criando novo estabelecimento",
+      description: "Você foi redirecionado para o formulário completo.",
+    });
   };
-
+  
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generatedUrl);
     toast({
@@ -73,7 +71,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Estabelecimentos</p>
-                  <p className="text-2xl font-bold">87</p>
+                  <p className="text-2xl font-bold">{establishmentsCount}</p>
                 </div>
               </div>
               <div className="mt-3 text-sm text-green-600 dark:text-green-400 flex items-center">
@@ -139,139 +137,81 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b">
-                            <th className="text-left py-3 px-2">Nome</th>
-                            <th className="text-left py-3 px-2">Proprietário</th>
-                            <th className="text-left py-3 px-2">Data de Cadastro</th>
-                            <th className="text-left py-3 px-2">Status</th>
-                            <th className="text-left py-3 px-2">Ações</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr className="border-b hover:bg-muted/50">
-                            <td className="py-3 px-2">Barbearia Silva</td>
-                            <td className="py-3 px-2">João Silva</td>
-                            <td className="py-3 px-2">15/05/2023</td>
-                            <td className="py-3 px-2">
-                              <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">Ativo</span>
-                            </td>
-                            <td className="py-3 px-2">
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="h-4 w-4"
-                                >
-                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                  <circle cx="12" cy="12" r="3" />
-                                </svg>
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="h-4 w-4"
-                                >
-                                  <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                                  <path d="m15 5 4 4" />
-                                </svg>
-                              </Button>
-                            </td>
-                          </tr>
-                          <tr className="border-b hover:bg-muted/50">
-                            <td className="py-3 px-2">Estúdio Beleza Pura</td>
-                            <td className="py-3 px-2">Maria Santos</td>
-                            <td className="py-3 px-2">12/05/2023</td>
-                            <td className="py-3 px-2">
-                              <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">Ativo</span>
-                            </td>
-                            <td className="py-3 px-2">
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="h-4 w-4"
-                                >
-                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                  <circle cx="12" cy="12" r="3" />
-                                </svg>
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="h-4 w-4"
-                                >
-                                  <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                                  <path d="m15 5 4 4" />
-                                </svg>
-                              </Button>
-                            </td>
-                          </tr>
-                          <tr className="border-b hover:bg-muted/50">
-                            <td className="py-3 px-2">Auto Mecânica Rapida</td>
-                            <td className="py-3 px-2">Carlos Oliveira</td>
-                            <td className="py-3 px-2">10/05/2023</td>
-                            <td className="py-3 px-2">
-                              <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-xs px-2 py-1 rounded-full">Pendente</span>
-                            </td>
-                            <td className="py-3 px-2">
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="h-4 w-4"
-                                >
-                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                  <circle cx="12" cy="12" r="3" />
-                                </svg>
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="h-4 w-4"
-                                >
-                                  <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                                  <path d="m15 5 4 4" />
-                                </svg>
-                              </Button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      {isLoading ? (
+                        <div className="text-center py-4">
+                          <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                          <p className="mt-2 text-sm text-muted-foreground">Carregando estabelecimentos...</p>
+                        </div>
+                      ) : isError ? (
+                        <div className="text-center py-4 text-destructive">
+                          <p>Erro ao carregar estabelecimentos.</p>
+                          <Button variant="outline" onClick={() => window.location.reload()} className="mt-2">
+                            Tentar novamente
+                          </Button>
+                        </div>
+                      ) : establishments?.length === 0 ? (
+                        <div className="text-center py-4">
+                          <p className="text-muted-foreground">Nenhum estabelecimento cadastrado.</p>
+                          <Link href="/admin/establishments">
+                            <Button variant="link" className="mt-2">
+                              Cadastrar estabelecimento
+                            </Button>
+                          </Link>
+                        </div>
+                      ) : (
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left py-3 px-2">Nome</th>
+                              <th className="text-left py-3 px-2">Proprietário</th>
+                              <th className="text-left py-3 px-2">Status</th>
+                              <th className="text-left py-3 px-2">Ações</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {establishments?.slice(0, 3).map((establishment) => (
+                              <tr key={establishment.id} className="border-b hover:bg-muted/50">
+                                <td className="py-3 px-2">{establishment.name}</td>
+                                <td className="py-3 px-2">{establishment.ownerName}</td>
+                                <td className="py-3 px-2">
+                                  <Badge 
+                                    variant={
+                                      establishment.status === "active" ? "success" : 
+                                      establishment.status === "inactive" ? "destructive" : 
+                                      "outline"
+                                    }
+                                    className="text-xs"
+                                  >
+                                    {establishment.status === "active" ? "Ativo" : 
+                                     establishment.status === "inactive" ? "Inativo" : 
+                                     establishment.status}
+                                  </Badge>
+                                </td>
+                                <td className="py-3 px-2">
+                                  <Link href={`/admin/establishments?id=${establishment.id}`}>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                      <Eye className="h-4 w-4" />
+                                    </Button>
+                                  </Link>
+                                  <Link href={`/admin/establishments?id=${establishment.id}&edit=true`}>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                  </Link>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                      
+                      <div className="mt-4 text-center">
+                        <Link href="/admin/establishments">
+                          <Button variant="outline" size="sm">
+                            Ver todos os estabelecimentos
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
