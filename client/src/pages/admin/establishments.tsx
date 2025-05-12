@@ -28,7 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -37,18 +36,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, getQueryFn, apiRequest } from "@/lib/queryClient";
 import { Business } from "@shared/schema";
 import { 
-  Building, Store, Users, Calendar, MoreHorizontal, Edit, Trash2, Eye, Search, RefreshCcw, PlusCircle
+  Building, MapPin, Phone, Mail, Calendar, Edit, Trash2, Eye, 
+  Search, RefreshCcw, PlusCircle, Check, X
 } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 export default function AdminEstablishments() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [viewDetailsId, setViewDetailsId] = useState<number | null>(null);
   const [editEstablishmentId, setEditEstablishmentId] = useState<number | null>(null);
   const [deleteEstablishmentId, setDeleteEstablishmentId] = useState<number | null>(null);
@@ -62,14 +66,16 @@ export default function AdminEstablishments() {
   const [formType, setFormType] = useState("");
   const [formAddress, setFormAddress] = useState("");
   const [formDescription, setFormDescription] = useState("");
+  const [formStatus, setFormStatus] = useState("active");
+  const [formIsPremium, setFormIsPremium] = useState(false);
   
-  // Fetch establishments
+  // Fetch businesses
   const { data: establishments, isLoading, isError, refetch } = useQuery<Business[]>({
     queryKey: ["/api/businesses"],
     queryFn: getQueryFn({ on401: "throw" }),
   });
   
-  // Create establishment mutation
+  // Create business mutation
   const createEstablishmentMutation = useMutation({
     mutationFn: async (data: any) => {
       const res = await apiRequest("POST", "/api/businesses", data);
@@ -93,7 +99,7 @@ export default function AdminEstablishments() {
     },
   });
   
-  // Update establishment mutation
+  // Update business mutation
   const updateEstablishmentMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
       const res = await apiRequest("PATCH", `/api/businesses/${id}`, data);
@@ -117,7 +123,7 @@ export default function AdminEstablishments() {
     },
   });
   
-  // Delete establishment mutation
+  // Delete business mutation
   const deleteEstablishmentMutation = useMutation({
     mutationFn: async (id: number) => {
       const res = await apiRequest("DELETE", `/api/businesses/${id}`);
@@ -140,7 +146,7 @@ export default function AdminEstablishments() {
     },
   });
   
-  // Handle establishment creation
+  // Handle business creation
   const handleCreateEstablishment = () => {
     if (!formName || !formOwnerName || !formEmail || !formType) {
       toast({
@@ -162,7 +168,7 @@ export default function AdminEstablishments() {
     });
   };
   
-  // Handle establishment update
+  // Handle business update
   const handleUpdateEstablishment = () => {
     if (!formName || !formOwnerName || !formEmail || !formType) {
       toast({
@@ -184,19 +190,21 @@ export default function AdminEstablishments() {
           type: formType,
           address: formAddress,
           description: formDescription,
+          status: formStatus,
+          isPremium: formIsPremium,
         },
       });
     }
   };
   
-  // Handle establishment deletion
+  // Handle business deletion
   const handleDeleteEstablishment = () => {
     if (deleteEstablishmentId) {
       deleteEstablishmentMutation.mutate(deleteEstablishmentId);
     }
   };
   
-  // Setup edit establishment form
+  // Setup edit business form
   const setupEditForm = (establishment: Business) => {
     setFormName(establishment.name);
     setFormOwnerName(establishment.ownerName);
@@ -205,6 +213,8 @@ export default function AdminEstablishments() {
     setFormType(establishment.type);
     setFormAddress(establishment.address || "");
     setFormDescription(establishment.description || "");
+    setFormStatus(establishment.status || "active");
+    setFormIsPremium(establishment.isPremium || false);
     setEditEstablishmentId(establishment.id);
   };
   
@@ -217,16 +227,8 @@ export default function AdminEstablishments() {
     setFormType("");
     setFormAddress("");
     setFormDescription("");
-  };
-  
-  // Copy URL to clipboard
-  const copyToClipboard = (slug: string) => {
-    const url = `https://agendahub.com/${slug}`;
-    navigator.clipboard.writeText(url);
-    toast({
-      title: "URL copiada!",
-      description: "Link copiado para a área de transferência.",
-    });
+    setFormStatus("active");
+    setFormIsPremium(false);
   };
   
   // Filter establishments
@@ -247,6 +249,26 @@ export default function AdminEstablishments() {
   const viewEstablishment = viewDetailsId ? 
     establishments?.find(e => e.id === viewDetailsId) : null;
   
+  // Get status badge variant
+  const getStatusBadgeVariant = (status: string | null) => {
+    switch (status) {
+      case "active": return "success";
+      case "inactive": return "destructive";
+      case "pending": return "warning";
+      default: return "secondary";
+    }
+  };
+  
+  // Get status display name
+  const getStatusDisplayName = (status: string | null) => {
+    switch (status) {
+      case "active": return "Ativo";
+      case "inactive": return "Inativo";
+      case "pending": return "Pendente";
+      default: return "Desconhecido";
+    }
+  };
+  
   return (
     <DashboardLayout role="admin">
       <div className="p-4 md:p-6 space-y-6">
@@ -254,7 +276,7 @@ export default function AdminEstablishments() {
           <div>
             <h1 className="text-2xl font-bold">Estabelecimentos</h1>
             <p className="text-muted-foreground">
-              Gerencie os estabelecimentos cadastrados no sistema
+              Gerencie os estabelecimentos cadastrados na plataforma
             </p>
           </div>
           
@@ -294,8 +316,8 @@ export default function AdminEstablishments() {
             <SelectContent>
               <SelectItem value="all">Todos os status</SelectItem>
               <SelectItem value="active">Ativos</SelectItem>
-              <SelectItem value="pending">Pendentes</SelectItem>
               <SelectItem value="inactive">Inativos</SelectItem>
+              <SelectItem value="pending">Pendentes</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -330,11 +352,10 @@ export default function AdminEstablishments() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Nome</TableHead>
-                      <TableHead>Proprietário</TableHead>
+                      <TableHead>Responsável</TableHead>
                       <TableHead>Tipo</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Agendamentos</TableHead>
-                      <TableHead>Plano</TableHead>
+                      <TableHead>Premium</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -345,20 +366,15 @@ export default function AdminEstablishments() {
                         <TableCell>{establishment.ownerName}</TableCell>
                         <TableCell>{establishment.type}</TableCell>
                         <TableCell>
-                          <Badge variant={
-                            establishment.status === "active" ? "default" :
-                            establishment.status === "pending" ? "secondary" : "outline"
-                          }>
-                            {establishment.status === "active" ? "Ativo" :
-                             establishment.status === "pending" ? "Pendente" : "Inativo"}
+                          <Badge variant={getStatusBadgeVariant(establishment.status) as any}>
+                            {getStatusDisplayName(establishment.status)}
                           </Badge>
                         </TableCell>
-                        <TableCell>{establishment.appointmentCount || 0}</TableCell>
                         <TableCell>
                           {establishment.isPremium ? (
-                            <Badge variant="default" className="bg-amber-500">Premium</Badge>
+                            <Check className="h-5 w-5 text-green-500" />
                           ) : (
-                            <Badge variant="outline">Gratuito</Badge>
+                            <X className="h-5 w-5 text-red-500" />
                           )}
                         </TableCell>
                         <TableCell className="text-right">
@@ -402,127 +418,101 @@ export default function AdminEstablishments() {
       
       {/* View Establishment Details Dialog */}
       <Dialog open={viewDetailsId !== null} onOpenChange={(open) => !open && setViewDetailsId(null)}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
             <DialogTitle>Detalhes do Estabelecimento</DialogTitle>
             <DialogDescription>Informações detalhadas sobre o estabelecimento</DialogDescription>
           </DialogHeader>
           
           {viewEstablishment && (
-            <Tabs defaultValue="info" className="mt-4">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="info">Informações</TabsTrigger>
-                <TabsTrigger value="stats">Estatísticas</TabsTrigger>
-                <TabsTrigger value="url">URL</TabsTrigger>
-              </TabsList>
+            <div className="space-y-4 mt-4">
+              <div className="rounded-md p-4 bg-secondary/10">
+                <div className="flex items-center gap-4">
+                  <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+                    <Building className="h-8 w-8" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold">{viewEstablishment.name}</h2>
+                    <Badge variant={getStatusBadgeVariant(viewEstablishment.status) as any}>
+                      {getStatusDisplayName(viewEstablishment.status)}
+                    </Badge>
+                    {viewEstablishment.isPremium && (
+                      <Badge variant="default" className="ml-2">Premium</Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
               
-              <TabsContent value="info" className="space-y-4 mt-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Nome</Label>
-                    <p className="font-medium">{viewEstablishment.name}</p>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Proprietário</Label>
-                    <p className="font-medium">{viewEstablishment.ownerName}</p>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Email</Label>
-                    <p className="font-medium">{viewEstablishment.email}</p>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Telefone</Label>
-                    <p className="font-medium">{viewEstablishment.phone || "Não informado"}</p>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Tipo</Label>
-                    <p className="font-medium">{viewEstablishment.type}</p>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Status</Label>
-                    <p className="font-medium">{
-                      viewEstablishment.status === "active" ? "Ativo" :
-                      viewEstablishment.status === "pending" ? "Pendente" : "Inativo"
-                    }</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Responsável</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span>{viewEstablishment.ownerName}</span>
                   </div>
                 </div>
                 
                 <div>
-                  <Label className="text-xs text-muted-foreground">Endereço</Label>
-                  <p className="font-medium">{viewEstablishment.address || "Não informado"}</p>
+                  <Label className="text-xs text-muted-foreground">Tipo</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span>{viewEstablishment.type}</span>
+                  </div>
                 </div>
-                
-                <div>
-                  <Label className="text-xs text-muted-foreground">Descrição</Label>
-                  <p className="font-medium">{viewEstablishment.description || "Não informada"}</p>
-                </div>
-              </TabsContent>
+              </div>
               
-              <TabsContent value="stats" className="space-y-4 mt-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-md bg-secondary/10">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5 text-primary" />
-                      <Label>Agendamentos</Label>
-                    </div>
-                    <p className="text-2xl font-bold mt-1">{viewEstablishment.appointmentCount || 0}</p>
-                    <p className="text-xs text-muted-foreground">{viewEstablishment.isPremium ? "Ilimitado" : `${viewEstablishment.appointmentCount || 0}/50 (Plano gratuito)`}</p>
-                  </div>
-                  
-                  <div className="p-4 rounded-md bg-secondary/10">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-primary" />
-                      <Label>Clientes</Label>
-                    </div>
-                    <p className="text-2xl font-bold mt-1">-</p>
-                    <p className="text-xs text-muted-foreground">Estatística em desenvolvimento</p>
-                  </div>
-                </div>
-                
-                <div className="p-4 rounded-md bg-secondary/10">
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">Contato</Label>
+                <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <Building className="h-5 w-5 text-primary" />
-                    <Label>Plano de Assinatura</Label>
+                    <Mail className="h-4 w-4 text-primary" />
+                    <span>{viewEstablishment.email}</span>
                   </div>
-                  <p className="text-xl font-bold mt-1">{viewEstablishment.isPremium ? "Premium" : "Gratuito"}</p>
-                  {!viewEstablishment.isPremium && (
-                    <div className="mt-2">
-                      <div className="h-2 bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className="bg-primary h-full rounded-full" 
-                          style={{ width: `${Math.min(((viewEstablishment.appointmentCount || 0) / 50) * 100, 100)}%` }}
-                        ></div>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {viewEstablishment.appointmentCount || 0}/50 agendamentos utilizados
-                      </p>
+                  {viewEstablishment.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-primary" />
+                      <span>{viewEstablishment.phone}</span>
                     </div>
                   )}
                 </div>
-              </TabsContent>
+              </div>
               
-              <TabsContent value="url" className="space-y-4 mt-4">
-                <div>
-                  <Label className="text-xs text-muted-foreground">URL para cadastro de clientes</Label>
-                  <div className="flex mt-1">
-                    <Input 
-                      value={`https://agendahub.com/${viewEstablishment.urlSlug}`}
-                      readOnly
-                      className="rounded-r-none"
-                    />
-                    <Button 
-                      onClick={() => copyToClipboard(viewEstablishment.urlSlug)} 
-                      className="rounded-l-none"
-                    >
-                      Copiar
-                    </Button>
+              {viewEstablishment.address && (
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Endereço</Label>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    <span>{viewEstablishment.address}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Compartilhe esta URL com os clientes para que eles possam se cadastrar no estabelecimento.
-                  </p>
                 </div>
-              </TabsContent>
-            </Tabs>
+              )}
+              
+              {viewEstablishment.description && (
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Descrição</Label>
+                  <p className="text-sm">{viewEstablishment.description}</p>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Data de Cadastro</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Calendar className="h-4 w-4 text-primary" />
+                    <span>
+                      {viewEstablishment.createdAt
+                        ? format(new Date(viewEstablishment.createdAt), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
+                        : "Data não disponível"}
+                    </span>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label className="text-xs text-muted-foreground">Agendamentos</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span>{viewEstablishment.appointmentCount || 0}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
           
           <DialogFooter>
@@ -531,41 +521,60 @@ export default function AdminEstablishments() {
               onClick={() => setViewDetailsId(null)}>
               Fechar
             </Button>
+            <Button 
+              onClick={() => {
+                if (viewEstablishment) {
+                  setupEditForm(viewEstablishment);
+                  setViewDetailsId(null);
+                }
+              }}>
+              Editar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
       
       {/* New Establishment Dialog */}
       <Dialog open={newEstablishmentOpen} onOpenChange={setNewEstablishmentOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
             <DialogTitle>Novo Estabelecimento</DialogTitle>
             <DialogDescription>
-              Cadastre um novo estabelecimento no sistema
+              Cadastre um novo estabelecimento na plataforma
             </DialogDescription>
           </DialogHeader>
           
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nome do Estabelecimento *</Label>
+                <Label htmlFor="name">Nome *</Label>
                 <Input
                   id="name"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  placeholder="Ex: Barbearia Silva"
+                  placeholder="Nome do estabelecimento"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="ownerName">Nome do Proprietário *</Label>
+                <Label htmlFor="type">Tipo *</Label>
                 <Input
-                  id="ownerName"
-                  value={formOwnerName}
-                  onChange={(e) => setFormOwnerName(e.target.value)}
-                  placeholder="Ex: João Silva"
+                  id="type"
+                  value={formType}
+                  onChange={(e) => setFormType(e.target.value)}
+                  placeholder="Ex: Salão de Beleza, Barbearia"
                 />
               </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="ownerName">Nome do Responsável *</Label>
+              <Input
+                id="ownerName"
+                value={formOwnerName}
+                onChange={(e) => setFormOwnerName(e.target.value)}
+                placeholder="Nome completo do responsável"
+              />
             </div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -576,7 +585,7 @@ export default function AdminEstablishments() {
                   type="email"
                   value={formEmail}
                   onChange={(e) => setFormEmail(e.target.value)}
-                  placeholder="Ex: contato@barbearia.com"
+                  placeholder="email@exemplo.com"
                 />
               </div>
               
@@ -586,27 +595,9 @@ export default function AdminEstablishments() {
                   id="phone"
                   value={formPhone}
                   onChange={(e) => setFormPhone(e.target.value)}
-                  placeholder="Ex: (11) 98765-4321"
+                  placeholder="(00) 00000-0000"
                 />
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="type">Tipo de Estabelecimento *</Label>
-              <Select value={formType} onValueChange={setFormType}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="barber">Barbearia</SelectItem>
-                  <SelectItem value="salon">Salão de Beleza</SelectItem>
-                  <SelectItem value="clinic">Clínica</SelectItem>
-                  <SelectItem value="gym">Academia</SelectItem>
-                  <SelectItem value="restaurant">Restaurante</SelectItem>
-                  <SelectItem value="mechanic">Oficina Mecânica</SelectItem>
-                  <SelectItem value="other">Outro</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
             
             <div className="space-y-2">
@@ -615,17 +606,18 @@ export default function AdminEstablishments() {
                 id="address"
                 value={formAddress}
                 onChange={(e) => setFormAddress(e.target.value)}
-                placeholder="Ex: Av. Paulista, 1000 - São Paulo/SP"
+                placeholder="Endereço completo"
               />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="description">Descrição</Label>
-              <Input
+              <Textarea
                 id="description"
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
-                placeholder="Ex: A melhor barbearia da cidade"
+                placeholder="Descrição do estabelecimento"
+                rows={3}
               />
             </div>
           </div>
@@ -651,7 +643,7 @@ export default function AdminEstablishments() {
       
       {/* Edit Establishment Dialog */}
       <Dialog open={editEstablishmentId !== null} onOpenChange={(open) => !open && setEditEstablishmentId(null)}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
             <DialogTitle>Editar Estabelecimento</DialogTitle>
             <DialogDescription>
@@ -662,7 +654,7 @@ export default function AdminEstablishments() {
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-name">Nome do Estabelecimento *</Label>
+                <Label htmlFor="edit-name">Nome *</Label>
                 <Input
                   id="edit-name"
                   value={formName}
@@ -671,13 +663,22 @@ export default function AdminEstablishments() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="edit-ownerName">Nome do Proprietário *</Label>
+                <Label htmlFor="edit-type">Tipo *</Label>
                 <Input
-                  id="edit-ownerName"
-                  value={formOwnerName}
-                  onChange={(e) => setFormOwnerName(e.target.value)}
+                  id="edit-type"
+                  value={formType}
+                  onChange={(e) => setFormType(e.target.value)}
                 />
               </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="edit-ownerName">Nome do Responsável *</Label>
+              <Input
+                id="edit-ownerName"
+                value={formOwnerName}
+                onChange={(e) => setFormOwnerName(e.target.value)}
+              />
             </div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -702,24 +703,6 @@ export default function AdminEstablishments() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="edit-type">Tipo de Estabelecimento *</Label>
-              <Select value={formType} onValueChange={setFormType}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="barber">Barbearia</SelectItem>
-                  <SelectItem value="salon">Salão de Beleza</SelectItem>
-                  <SelectItem value="clinic">Clínica</SelectItem>
-                  <SelectItem value="gym">Academia</SelectItem>
-                  <SelectItem value="restaurant">Restaurante</SelectItem>
-                  <SelectItem value="mechanic">Oficina Mecânica</SelectItem>
-                  <SelectItem value="other">Outro</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
               <Label htmlFor="edit-address">Endereço</Label>
               <Input
                 id="edit-address"
@@ -730,11 +713,37 @@ export default function AdminEstablishments() {
             
             <div className="space-y-2">
               <Label htmlFor="edit-description">Descrição</Label>
-              <Input
+              <Textarea
                 id="edit-description"
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
+                rows={3}
               />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 pt-2">
+              <div className="space-y-2">
+                <Label htmlFor="edit-status">Status</Label>
+                <Select value={formStatus} onValueChange={setFormStatus}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Ativo</SelectItem>
+                    <SelectItem value="inactive">Inativo</SelectItem>
+                    <SelectItem value="pending">Pendente</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center justify-start space-x-2 pt-8">
+                <Switch 
+                  id="edit-premium" 
+                  checked={formIsPremium}
+                  onCheckedChange={setFormIsPremium}
+                />
+                <Label htmlFor="edit-premium">Conta Premium</Label>
+              </div>
             </div>
           </div>
           

@@ -410,6 +410,137 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // User management routes (admin only)
+  app.get("/api/users", async (req, res) => {
+    try {
+      // Require admin permissions
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Permissão negada" });
+      }
+      
+      // Fetch all users
+      const users = Array.from(storage.getUsers().values()).map(user => {
+        // Remove password from response
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
+      
+      res.json(users);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Erro ao buscar usuários" });
+    }
+  });
+  
+  app.get("/api/users/:id", async (req, res) => {
+    try {
+      // Require admin permissions
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Permissão negada" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+      
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Erro ao buscar usuário" });
+    }
+  });
+  
+  app.patch("/api/users/:id", async (req, res) => {
+    try {
+      // Require admin permissions
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Permissão negada" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+      
+      const { name, email, password, role } = req.body;
+      
+      // Check if user exists
+      const existingUser = await storage.getUser(id);
+      if (!existingUser) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+      
+      // Create update data
+      const updateData: any = {};
+      if (name) updateData.name = name;
+      if (email) updateData.email = email;
+      if (role) updateData.role = role;
+      
+      // If password is provided, use it directly for now
+      // In a real app, we would hash it first
+      if (password) {
+        updateData.password = password;
+      }
+      
+      // Update user
+      const updatedUser = await storage.updateUser(id, updateData);
+      if (!updatedUser) {
+        return res.status(500).json({ message: "Erro ao atualizar usuário" });
+      }
+      
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Erro ao atualizar usuário" });
+    }
+  });
+  
+  app.delete("/api/users/:id", async (req, res) => {
+    try {
+      // Require admin permissions
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Permissão negada" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+      
+      // Check if user exists
+      const existingUser = await storage.getUser(id);
+      if (!existingUser) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+      
+      // Check if it's the user's own account
+      if (id === req.user.id) {
+        return res.status(400).json({ message: "Não é possível remover sua própria conta" });
+      }
+      
+      // Delete user
+      const success = await storage.deleteUser(id);
+      if (!success) {
+        return res.status(500).json({ message: "Erro ao remover usuário" });
+      }
+      
+      res.json({ success: true, message: "Usuário removido com sucesso" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Erro ao remover usuário" });
+    }
+  });
+  
   // Notification routes
   app.get("/api/notifications", async (req, res) => {
     try {

@@ -9,6 +9,8 @@ import { ProtectedRoute } from "@/lib/protected-route";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import AdminDashboard from "@/pages/admin/dashboard";
+import AdminUsers from "@/pages/admin/users";
+import AdminEstablishments from "@/pages/admin/establishments";
 import OwnerDashboard from "@/pages/owner/dashboard";
 import ClientDashboard from "@/pages/client/dashboard";
 
@@ -17,6 +19,8 @@ function Router() {
     <Switch>
       <Route path="/auth" component={AuthPage} />
       <ProtectedRoute path="/admin" component={AdminDashboard} role="admin" />
+      <ProtectedRoute path="/admin/users" component={AdminUsers} role="admin" />
+      <ProtectedRoute path="/admin/establishments" component={AdminEstablishments} role="admin" />
       <ProtectedRoute path="/owner" component={OwnerDashboard} role="owner" />
       <ProtectedRoute path="/client" component={ClientDashboard} role="client" />
       <ProtectedRoute path="/" component={() => {
