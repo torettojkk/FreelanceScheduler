@@ -1,0 +1,191 @@
+Projeto AgendaHub - Sistema de Agendamento para Profissionais Autônomos
+Objetivo:
+Organizar compromissos de profissionais autônomos (manicures, barbeiros, mecânicos, etc.), enviar notificações automáticas para confirmação ou cancelamento de agendamentos e gerar relatórios semanais de clientes atendidos. Implementar atualizações e correções, como a verificação automática do cargo do usuário ao logar, melhorias na dashboard do cliente e correção da funcionalidade de cadastro de estabelecimentos.
+
+Paleta de Cores:
+
+Tema Escuro: #213448 (Fundo Principal), #547792 (Botões Primários), #94B4C1 (Hover/Destaques), #ECEFCA (Textos, Ícones, Bordas)
+
+Tema Claro: #F7F7F7 (Fundo Principal), #376996 (Botões Primários), #639AAC (Hover/Destaques), #333333 (Textos, Ícones, Bordas)
+
+Os usuários poderão escolher entre o tema escuro ou claro em qualquer momento nas configurações.
+
+Estilo Visual:
+
+Tema escuro, flat e minimalista
+
+Ícones lineares, animações suaves
+
+Bordas arredondadas, espaçamento consistente
+
+Tipografia legível, sem serifa, com foco na clareza e contraste
+
+Funcionalidades:
+Tela de Login:
+
+Tipos de Acesso: Admin (Sistema), Dono do Estabelecimento, Cliente
+
+Campos: E-mail, Senha
+
+Link para recuperação de senha
+
+Botão 'Entrar' estilizado (#547792)
+
+Verificação automática do cargo do usuário ao logar (Admin, Dono do Estabelecimento ou Cliente), eliminando a necessidade de seleção manual por meio de botões
+
+Redirecionamento automático para o painel correspondente
+
+Dashboard do Admin (Sistema):
+
+Resumo dos autônomos cadastrados
+
+Relatórios semanais/mensais (agendamentos/cancelamentos)
+
+Acesso ao painel dos autônomos
+
+Cadastro de estabelecimentos com geração de URL exclusiva
+
+Visualização de clientes por estabelecimento
+
+Listagem de funções pendentes e painel para resolução de pendências
+
+Exibição centralizada de todas as funções pendentes e possibilidade de resolvê-las diretamente
+
+Verificação e correção da funcionalidade de cadastro de novos estabelecimentos e geração de URL
+
+Dashboard do Autônomo:
+
+Personalização da página do negócio (nome, serviços, horário, foto/logo)
+
+Agenda de compromissos (visualização diária/semanal/mensal)
+
+Histórico de clientes atendidos
+
+Relatórios financeiros
+
+Notificações pendentes (confirmação/cancelamento)
+
+URL gerada pelo admin para cadastro de clientes
+
+Listagem de funções pendentes e painel para resolução de pendências
+
+Dashboard do Cliente:
+
+Exibição dos agendamentos futuros (data, hora, serviço, profissional)
+
+Notificações pendentes (ex.: confirmação/cancelamento de agendamentos)
+
+Histórico de serviços realizados
+
+Informações do estabelecimento vinculado (nome, endereço, telefone, horário de atendimento)
+
+Link para agendar novos serviços
+
+Confirmação/cancelamento de agendamentos pendentes
+
+Reagendamento de serviços (se permitido pelo estabelecimento)
+
+Exportação do histórico de serviços em PDF
+
+Cadastro de Compromissos:
+
+Formulário: Cliente, Serviço, Data, Hora, Observações
+
+Exibição do limite de 50 agendamentos gratuitos (barra de progresso)
+
+Notificações:
+
+Configurar notificações automáticas (1h antes, 1 dia antes)
+
+Histórico de notificações enviadas
+
+Plano de Assinatura:
+
+Tela de upgrade após 50 agendamentos
+
+Exibição do plano premium (R$ 49,90/mês)
+
+Formulário para contratação e pagamento
+
+Cadastro de Clientes por URL:
+
+URL gerada pelo admin ao cadastrar um estabelecimento
+
+Cliente se cadastra no estabelecimento através da URL
+
+Cliente vinculado automaticamente ao estabelecimento
+
+Sistema de Avaliações e Feedbacks:
+
+Permitir que os clientes avaliem os serviços realizados
+
+Exibir a média de avaliações no perfil do autônomo
+
+Sistema de respostas para feedbacks (autônomo pode responder avaliações)
+
+Sistema de Fidelidade/Recompensas:
+
+Implementar um sistema de recompensas para clientes frequentes. Exemplo: a cada 10 agendamentos, o cliente ganha um desconto
+
+Painel para o autônomo criar promoções personalizadas
+
+Controle de Ausências e Férias:
+
+Autônomos podem configurar datas de ausência ou férias para bloquear horários automaticamente
+
+Notificação automática para os clientes caso o autônomo esteja ausente
+
+Sistema de Mensagens Internas:
+
+Chat interno para comunicação entre clientes e autônomos
+
+Histórico das conversas vinculadas aos agendamentos
+
+Relatórios Avançados:
+
+Gráficos detalhados com estatísticas de faturamento, serviços mais agendados, horário de pico, etc.
+
+Exportação de relatórios para Excel e PDF
+
+Novas Funcionalidades Adicionadas:
+Gestão de Funcionários e Equipe (para Donos de Estabelecimento):
+
+Permitir que o Dono do Estabelecimento cadastre funcionários e gerencie suas agendas separadamente
+
+Controle de permissões para funcionários (ex.: acesso restrito a determinados relatórios)
+
+Integração com Calendários Externos:
+
+Sincronização dos agendamentos com Google Calendar ou Outlook
+
+Exportação de compromissos para o calendário pessoal do cliente
+
+Notificações Personalizadas:
+
+Enviar mensagens personalizadas para clientes (ex.: lembrete de aniversário, promoções especiais)
+
+Notificações baseadas em condições específicas (ex.: cliente com 3 cancelamentos seguidos)
+
+Sistema de Referências e Convites:
+
+Clientes podem indicar amigos e ganhar recompensas
+
+Estabelecimentos podem criar campanhas de indicação
+
+Personalização Avançada de Relatórios:
+
+Opção para o Dono do Estabelecimento criar relatórios personalizados com filtros e métricas específicas
+
+Controle de Disponibilidade de Serviços:
+
+Autônomos podem configurar serviços específicos disponíveis apenas em determinados dias/horários
+
+Bloqueio automático de horários já ocupados ou indisponíveis
+
+Requisitos Extras:
+
+Microinterações suaves (hover, clique)
+
+Feedback visual após ações (ex.: confirmação de agendamento)
+
+Tipografia legível, sem serifa, com foco na clareza e contraste
