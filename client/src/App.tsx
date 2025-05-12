@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
+import Registro from "@/pages/registro";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminUsers from "@/pages/admin/users";
 import AdminEstablishments from "@/pages/admin/establishments";
@@ -18,6 +19,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/auth" component={AuthPage} />
+      <Route path="/registro/:businessSlug" component={Registro} />
       <ProtectedRoute path="/admin" component={AdminDashboard} role="admin" />
       <ProtectedRoute path="/admin/users" component={AdminUsers} role="admin" />
       <ProtectedRoute path="/admin/establishments" component={AdminEstablishments} role="admin" />
