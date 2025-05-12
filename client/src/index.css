@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 97%;
+  --foreground: 222 47% 11%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --primary: 212 70% 40%; /* #376996 */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 197 22% 53%; /* #639AAC */
+  --secondary-foreground: 222 47% 11%;
+  --accent: 197 22% 53%; /* #639AAC */
+  --accent-foreground: 222 47% 11%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --ring: 215 20.2% 65.1%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 219 32% 20%; /* #213448 */
+  --foreground: 60 24% 86%; /* #ECEFCA */
+  --muted: 223 47% 11%;
+  --muted-foreground: 215.4 16.3% 56.9%;
+  --popover: 224 71% 4%;
+  --popover-foreground: 60 24% 86%;
+  --card: 219 32% 20%; /* #213448 */
+  --card-foreground: 60 24% 86%;
+  --border: 216 34% 17%;
+  --input: 216 34% 17%;
+  --primary: 199 22% 45%; /* #547792 */
+  --primary-foreground: 60 24% 86%;
+  --secondary: 195 25% 67%; /* #94B4C1 */
+  --secondary-foreground: 60 24% 86%;
+  --accent: 195 25% 67%; /* #94B4C1 */
+  --accent-foreground: 60 24% 86%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 24% 86%;
+  --ring: 195 25% 67%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .calendar-day {
+    @apply h-20 overflow-y-auto;
+  }
+  
+  .calendar-day::-webkit-scrollbar {
+    @apply w-1;
+  }
+  
+  .calendar-day::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  
+  .calendar-day::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-secondary rounded;
+  }
+  
+  .appointment-item {
+    @apply px-2 py-1 rounded text-xs mb-1 cursor-pointer;
+  }
+}
