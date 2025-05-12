@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import {
@@ -9,16 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowUp, Building, Users, CalendarCheck, Eye, Edit, PlusCircle } from "lucide-react";
@@ -265,99 +257,55 @@ export default function AdminDashboard() {
               <CardHeader>
                 <CardTitle>Cadastrar Estabelecimento</CardTitle>
                 <CardDescription>
-                  Registre um novo estabelecimento e gere uma URL única
+                  Registre um novo estabelecimento na plataforma
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="businessName">Nome do Estabelecimento</Label>
-                    <Input 
-                      id="businessName"
-                      value={businessName}
-                      onChange={(e) => setBusinessName(e.target.value)}
-                      placeholder="Nome do estabelecimento"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="ownerName">Nome do Proprietário</Label>
-                    <Input 
-                      id="ownerName"
-                      value={ownerName}
-                      onChange={(e) => setOwnerName(e.target.value)}
-                      placeholder="Nome do proprietário"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">E-mail</Label>
-                    <Input 
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="email@exemplo.com"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Telefone</Label>
-                    <Input 
-                      id="phone"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="(00) 00000-0000"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="businessType">Tipo de Negócio</Label>
-                    <Select value={businessType} onValueChange={setBusinessType}>
-                      <SelectTrigger id="businessType">
-                        <SelectValue placeholder="Selecione o tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="barber">Barbearia</SelectItem>
-                        <SelectItem value="salon">Salão de Beleza</SelectItem>
-                        <SelectItem value="mechanic">Mecânica</SelectItem>
-                        <SelectItem value="clinic">Consultório</SelectItem>
-                        <SelectItem value="other">Outro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button 
-                    type="button" 
-                    className="w-full" 
-                    onClick={handleRegisterBusiness}
-                  >
-                    Cadastrar e Gerar URL
-                  </Button>
-                </form>
-                
-                {generatedUrl && (
-                  <div className="mt-4 p-3 bg-primary/10 rounded-md">
-                    <Label className="text-sm">URL para cadastro de clientes:</Label>
-                    <div className="flex mt-1">
-                      <Input value={generatedUrl} readOnly className="flex-1 rounded-r-none" />
-                      <Button 
-                        type="button" 
-                        onClick={copyToClipboard} 
-                        className="rounded-l-none"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="h-4 w-4"
-                        >
-                          <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Utilize o formulário completo de cadastro para adicionar um novo estabelecimento ao sistema.
+                  </p>
+                  
+                  <div className="mb-4">
+                    <h3 className="text-sm font-medium mb-2">Benefícios de cadastrar um estabelecimento:</h3>
+                    <ul className="space-y-1 text-sm">
+                      <li className="flex items-start">
+                        <svg className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                      </Button>
-                    </div>
+                        Acesso à plataforma de agendamentos
+                      </li>
+                      <li className="flex items-start">
+                        <svg className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Página personalizada para o negócio
+                      </li>
+                      <li className="flex items-start">
+                        <svg className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Gestão de serviços e clientes
+                      </li>
+                    </ul>
                   </div>
-                )}
+                  
+                  <Button
+                    onClick={goToNewEstablishmentPage}
+                    className="w-full bg-primary text-primary-foreground"
+                  >
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Adicionar Novo Estabelecimento
+                  </Button>
+                  
+                  <div className="text-center">
+                    <Link href="/admin/establishments">
+                      <Button variant="link" size="sm">
+                        Ver todos os estabelecimentos
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
