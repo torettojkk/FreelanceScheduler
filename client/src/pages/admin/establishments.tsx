@@ -44,7 +44,7 @@ import { queryClient, getQueryFn, apiRequest } from "@/lib/queryClient";
 import { Business } from "@shared/schema";
 import { 
   Building, MapPin, Phone, Mail, Calendar, Edit, Trash2, Eye, 
-  Search, RefreshCcw, PlusCircle, Check, X
+  Search, RefreshCcw, PlusCircle, Check, X, Link, Copy, ExternalLink
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -267,6 +267,15 @@ export default function AdminEstablishments() {
       case "pending": return "Pendente";
       default: return "Desconhecido";
     }
+  };
+  
+  // Copy URL to clipboard
+  const copyUrlToClipboard = (url: string) => {
+    navigator.clipboard.writeText(url);
+    toast({
+      title: "URL copiada!",
+      description: "Link copiado para a área de transferência.",
+    });
   };
   
   return (
