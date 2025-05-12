@@ -48,7 +48,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Estabelecimento não encontrado" });
       }
       
-      res.json(business);
+      // Retorna apenas as informações públicas necessárias para registro
+      const publicInfo = {
+        id: business.id,
+        name: business.name,
+        type: business.type,
+        description: business.description,
+        logo: business.logo,
+        urlSlug: business.urlSlug,
+        status: business.status
+      };
+      
+      res.json(publicInfo);
     } catch (error) {
       console.error("Error fetching business by slug:", error);
       res.status(500).json({ message: "Erro ao buscar estabelecimento" });

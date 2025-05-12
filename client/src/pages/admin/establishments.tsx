@@ -501,6 +501,40 @@ export default function AdminEstablishments() {
                 </div>
               )}
               
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">URL de Cadastro para Clientes</Label>
+                <div className="flex items-center gap-2 bg-secondary/20 p-2 rounded-md">
+                  <Link className="h-4 w-4 text-primary" />
+                  <div className="flex-1 overflow-hidden">
+                    <Input 
+                      value={`${window.location.origin}/registro/${viewEstablishment.urlSlug}`}
+                      readOnly 
+                      className="h-8 text-sm" 
+                    />
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="h-8 px-2"
+                    onClick={() => copyUrlToClipboard(`${window.location.origin}/registro/${viewEstablishment.urlSlug}`)}
+                  >
+                    <Copy className="h-4 w-4 mr-1" />
+                    Copiar
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="h-8 px-2"
+                    onClick={() => window.open(`${window.location.origin}/registro/${viewEstablishment.urlSlug}`, '_blank')}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Compartilhe esta URL com clientes para que eles possam se cadastrar diretamente no seu estabelecimento.
+                </p>
+              </div>
+              
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-xs text-muted-foreground">Data de Cadastro</Label>
